@@ -1,9 +1,11 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 import log_generator
 import json
 import glob
 import random
 import time
+import datetime
 
 app = FastAPI()
 
@@ -11,7 +13,7 @@ START_TIME = time.time()
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return RedirectResponse(url="/metrics")
 
 @app.get("/logs")
 def read_logs():
@@ -41,8 +43,8 @@ def read_error():
     latest_file = log_files[-1]
 
     errors = []
-    with open(latest_file, "r") as f:
-        for line in f:
+    with open(latest_file, "r") as file:
+        for line in file:
             try:
                 entry = json.loads(line)
                 if entry["level"] == "ERROR":
@@ -62,8 +64,8 @@ def read_metric():
     latest_file = log_files[-1]
 
     logs = []
-    with open(latest_file, "r") as f:
-        for line in f:
+    with open(latest_file, "r") as file:
+        for line in file:
             try:
                 logs.append(json.loads(line))
             except:
@@ -74,10 +76,20 @@ def read_metric():
 
     latencies = [log["latency_ms"] for log in logs]
     errors = [log for log in logs if log["level"] == "ERROR"]
+    one_minute_ago = time.time() - 60
+
+    recent_logs = []
+    for log in logs:
+        try:
+            ts = datetime.datetime.fromisoformat(log["timestamp"]).timestamp()
+            if ts >= one_minute_ago:
+                recent_logs.append(log)
+        except:
+            continue
 
     metrics = {
         "avg_latency_ms": sum(latencies) / len(latencies),
-        "requests_last_minute": len(logs),  # simple version
+        "requests_last_minute": len(recent_logs),
         "error_rate": len(errors) / len(logs),
         "cpu_percent": random.randint(10, 80),
         "memory_mb": random.randint(200, 800),
