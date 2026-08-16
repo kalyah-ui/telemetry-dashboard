@@ -9,7 +9,7 @@ export function IndexLineChart({ data }: { data: any[] }) {
             <YAxis width="auto" stroke='var(--gridlines)' />
             <Line
                 type="monotone"
-                dataKey="uv"
+                dataKey="logs"
                 stroke='var(--chart-1)'
                 dot={{
                     fill: 'var(--container-bg)',

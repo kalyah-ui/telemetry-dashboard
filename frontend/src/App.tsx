@@ -1,8 +1,9 @@
 import { Route, Routes } from 'react-router'
 import './App.css'
 import { Header } from './Header'
-import { MetricsPage } from './pages/MetricsPage'
-import { LogsPage } from './pages/LogsPage'
+import { MetricsPage } from './MetricsPage'
+import { LogsPage } from './linechart/LogsPage'
+import { BarchartDisplay } from './barchart/BarChartDisplay'
 
 function App() {
   return (
@@ -10,7 +11,7 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<MetricsPage />} />
-        <Route path="/logs" element={<LogsPage />} />
+        <Route path="/logs" element={<><BarchartDisplay /> <LogsPage /></>} />
       </Routes>
     </div>
   )

@@ -1,0 +1,14 @@
+.small-heading-container {
+  width: fit-content;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--container-bg-secondary);
+  padding: 8px;
+  border-radius: 10px;
+  font-family: var(--sans);
+  text-transform: uppercase;
+  font-size: 20px;
+}

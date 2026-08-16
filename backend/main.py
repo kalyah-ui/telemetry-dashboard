@@ -16,7 +16,7 @@ START_TIME = time.time()
 def get_recent_window_logs(days: int = 7):
     now = datetime.datetime.now()
     cutoff = now.replace(hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(days=7)
-    log_files = sorted(glob.glob("logs/*.log"), key=os.path.getmtime, reverse=True)
+    log_files = glob.glob("logs/*.log")
     logs = []
 
     for file_path in log_files:
@@ -44,7 +44,7 @@ def read_root():
 
 @app.get("/logs")
 def read_logs():
-    return get_recent_window_logs(7)
+    logs = get_recent_window_logs(7)
 
 
 @app.get("/errors")
