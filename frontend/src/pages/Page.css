@@ -1,0 +1,18 @@
+.heading-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 16px;
+  background-color: var(--container-bg-secondary);
+  padding: 8px;
+  border-radius: 10px;
+  font-family: var(--sans);
+  text-transform: uppercase;
+  font-size: 20px;
+}
+
+.background-container {
+    background-color: var(--dark-container-bg);
+    border-radius: 10px;
+}
