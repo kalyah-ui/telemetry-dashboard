@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'rec
 export function ClusteredBarChart({ data }: { data: any[] }) {
     return(
         <BarChart
-            style={{ width: '100%', maxWidth: '700px', maxHeight: '70vh', aspectRatio: 1.618 }}
+            style={{ width: '30%', maxWidth: '700px', maxHeight: '70vh', aspectRatio: 1.618 }}
             responsive
             data={data}
             margin={{
@@ -18,8 +18,8 @@ export function ClusteredBarChart({ data }: { data: any[] }) {
             <YAxis width="auto" />
             <Tooltip />
             <Legend />
-            <Bar dataKey="pv" fill='var(--container-bg)' activeBar={{ fill: 'var(--chart-1)', stroke: 'var(--chart-1)' }} radius={[10, 10, 0, 0]} />
-            <Bar dataKey="uv" fill='var(--container-bg)' activeBar={{ fill: 'var(--chart-2)', stroke: 'var(--chart-2)' }} radius={[10, 10, 0, 0]} />
+            <Bar dataKey="pv" fill='var(--darker-chart-1)' activeBar={{ fill: 'var(--chart-1)', stroke: 'var(--chart-1)' }} radius={[10, 10, 0, 0]} />
+            <Bar dataKey="uv" fill='var(--darker-chart-2)' activeBar={{ fill: 'var(--chart-2)', stroke: 'var(--chart-2)' }} radius={[10, 10, 0, 0]} />
         </BarChart>
     )
 }

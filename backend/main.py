@@ -3,6 +3,7 @@ from fastapi.responses import RedirectResponse
 import log_generator
 import json
 import glob
+import os
 import random
 import time
 import datetime
@@ -11,66 +12,51 @@ app = FastAPI()
 
 START_TIME = time.time()
 
+
+def get_recent_window_logs(days: int = 7):
+    now = datetime.datetime.now()
+    cutoff = now.replace(hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(days=7)
+    log_files = sorted(glob.glob("logs/*.log"), key=os.path.getmtime, reverse=True)
+    logs = []
+
+    for file_path in log_files:
+        try:
+            with open(file_path, "r") as file:
+                for line in file:
+                    try:
+                        entry = json.loads(line)
+                        ts = datetime.datetime.fromisoformat(entry["timestamp"])
+                        if ts >= cutoff:
+                            logs.append(entry)
+                    except (json.JSONDecodeError, KeyError, ValueError):
+                        continue
+        except OSError:
+            continue
+
+    logs.sort(key=lambda item: item["timestamp"])
+    return logs
+
+
 @app.get("/")
 def read_root():
     return RedirectResponse(url="/metrics")
 
+
 @app.get("/logs")
 def read_logs():
-    # find all log files
-    log_files = sorted(glob.glob("logs/*.log"))
-    if not log_files:
-        return []
+    return get_recent_window_logs(7)
 
-    latest_file = log_files[-1]
-
-    logs = []
-    with open(latest_file, "r") as file:
-        for line in file:
-            try:
-                logs.append(json.loads(line))
-            except json.JSONDecodeError:
-                continue  # skip bad lines
-
-    return logs[-50:]
 
 @app.get("/errors")
 def read_error():
-    log_files = sorted(glob.glob("logs/*.log"))
-    if not log_files:
-        return []
-
-    latest_file = log_files[-1]
-
-    errors = []
-    with open(latest_file, "r") as file:
-        for line in file:
-            try:
-                entry = json.loads(line)
-                if entry["level"] == "ERROR":
-                    errors.append(entry)
-            except:
-                continue
-
+    logs = get_recent_window_logs(7)
+    errors = [log for log in logs if log.get("level") == "ERROR"]
     return errors[-50:]
 
 
 @app.get("/metrics")
 def read_metric():
-    log_files = sorted(glob.glob("logs/*.log"))
-    if not log_files:
-        return {}
-
-    latest_file = log_files[-1]
-
-    logs = []
-    with open(latest_file, "r") as file:
-        for line in file:
-            try:
-                logs.append(json.loads(line))
-            except:
-                continue
-
+    logs = get_recent_window_logs(7)
     if not logs:
         return {}
 
