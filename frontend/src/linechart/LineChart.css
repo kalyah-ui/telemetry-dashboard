@@ -1,26 +1,13 @@
 .chart-header-container {
-  height: auto;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  height: 16px;
   background-color: var(--container-bg-secondary);
   padding: 8px;
   border-radius: 10px;
   font-family: var(--sans);
   text-transform: uppercase;
   font-size: 20px;
-  margin: 0 0 20px 0;
-}
-
-.background-container {
-    background-color: var(--dark-container-bg);
-    border-radius: 10px;
-}
-
-.charts-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 24px;
-  align-items: center;
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { IndexLineChart } from "./IndexLineChart.tsx";
 import "../Page.css"
+import "./LineChart.css"
 
 function parseLocalDate(dateStr: string) {
     const [y, m, d] = dateStr.split('-').map(Number);
@@ -77,7 +78,6 @@ export function LogsPage() {
                 {summaryChartData === null && !error && <div>Loading logs...</div>}
                 {summaryChartData && (
                     <div>
-                        <h2>Logs (last 7 days)</h2>
                         <IndexLineChart data={summaryChartData} />
                     </div>
                 )}

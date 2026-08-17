@@ -1,7 +1,11 @@
 .background {
-  min-height: 100vh;
-  /* Approximate Tailwind gradient: bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 */
-  
+  min-height: 100vh;  
   position: relative;
   overflow: hidden;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }

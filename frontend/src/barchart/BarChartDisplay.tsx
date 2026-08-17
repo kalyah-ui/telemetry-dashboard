@@ -79,12 +79,11 @@ export function BarchartDisplay() {
 
     return (
         <>
-            <div className="background-container">
+            <div className="barchart-background-container">
                 <h1 className="chart-header-container">Errors</h1>
                 {errorChartData === null && !error && <div>Loading logs...</div>}
                 {errorChartData && (
                     <div>
-                        <h2>Errors (last 7 days)</h2>
                         <ClusteredBarChart data={errorChartData} />
                     </div>
                 )}

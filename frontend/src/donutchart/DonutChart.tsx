@@ -1,93 +1,68 @@
-import { PieChart, Pie, Label } from 'recharts';
+import { Pie, PieChart, Sector, useActiveTooltipDataPoints, useIsTooltipActive, type PieLabelRenderProps, type PieSectorShapeProps } from 'recharts';
+import "./DonutChart.css"
 
-export function DonutChart({ data }: { data: any[] }) {
-    const MyPie = () => (
-        <Pie data={data} dataKey="value" nameKey="name" outerRadius="80%" innerRadius="60%" isAnimationActive={false} />
-    );
+const RADIAN = Math.PI / 180;
+const COLORS = ['var(--darker-chart-1)', 'var(--darker-chart-2)', 'var(--darker-chart-3)'];
 
-    return(
-        <div style={{ width: '100%', minHeight: '500px' }}>
-        <div
-            style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gridTemplateRows: 'repeat(3, 1fr)',
-            gap: '10px',
-            width: '100%',
-            minHeight: '400px',
-            border: '1px solid #ccc',
-            padding: '10px',
-            }}
-        >
-            <PieChart
-            responsive
-            style={{
-                gridColumn: '1 / 3',
-                gridRow: '1 / 3',
-                border: '1px solid #ddd',
-                maxWidth: '100%',
-                maxHeight: '100%',
-                aspectRatio: 1,
-            }}
-            >
-            <MyPie />
-            <Label position="center" fill="#666">
-                2x2 cell
-            </Label>
-            </PieChart>
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: PieLabelRenderProps) => {
+  if (cx == null || cy == null || innerRadius == null || outerRadius == null) {
+    return null;
+  }
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const ncx = Number(cx);
+  const x = ncx + radius * Math.cos(-(midAngle ?? 0) * RADIAN);
+  const ncy = Number(cy);
+  const y = ncy + radius * Math.sin(-(midAngle ?? 0) * RADIAN);
 
-            <PieChart
-            responsive
-            style={{
-                gridColumn: '3 / 4',
-                gridRow: '1 / 2',
-                border: '1px solid #ddd',
-                maxWidth: '100%',
-                maxHeight: '100%',
-                aspectRatio: 1,
-            }}
-            >
-            <MyPie />
-            <Label position="center" fill="#666">
-                1x1 cell
-            </Label>
-            </PieChart>
+  return (
+    <text x={x} y={y} fill="white" textAnchor={x > ncx ? 'start' : 'end'} dominantBaseline="central">
+      {`${((percent ?? 1) * 100).toFixed(0)}%`}
+    </text>
+  );
+};
 
-            <PieChart
-            responsive
-            style={{
-                gridColumn: '3 / 4',
-                gridRow: '2 / 3',
-                border: '1px solid #ddd',
-                maxWidth: '100%',
-                maxHeight: '100%',
-                aspectRatio: 1,
-            }}
-            >
-            <MyPie />
-            <Label position="center" fill="#666">
-                1x1 cell
-            </Label>
-            </PieChart>
+const MyCustomPie = (props: PieSectorShapeProps) => {
+  const p = useActiveTooltipDataPoints();
+  const isAnyPieActive = useIsTooltipActive();
+  const isThisPieActive = isAnyPieActive && props.payload === p?.[0];
+  let fillOpacity: number;
+  if (isAnyPieActive && !isThisPieActive) {
+    fillOpacity = 0.5;
+  } else {
+    fillOpacity = 1;
+  }
+  return (
+    <Sector
+      {...props}
+      fill={COLORS[props.index % COLORS.length]}
+      stroke='var(--dark-container-bg)'
+      strokeWidth={2}
+      fillOpacity={fillOpacity}
+      style={{ transition: 'fill-opacity 0.3s ease' }}
+    />
+  );
+};
 
-            <PieChart
-            responsive
-            style={{
-                gridColumn: '1 / 4',
-                gridRow: '3 / 4',
-                border: '1px solid #ddd',
-                height: '100%',
-                // maxHeight: '200px',
-                aspectRatio: 1,
-                margin: '0 auto',
-            }}
-            >
-            <MyPie />
-            <Label position="center" fill="#666">
-                3x1 cell
-            </Label>
-            </PieChart>
-        </div>
-        </div>
+
+export function DonutChart({
+    data,
+    isAnimationActive = true,
+    }: {
+    data: any[];
+    isAnimationActive?: boolean;
+    }) {
+        console.log({data})
+  return (
+    <PieChart style={{ width: '25%', maxWidth: '500px', maxHeight: '80vh', aspectRatio: 1 }} responsive>
+      <Pie
+        data={data}
+        labelLine={false}
+        label={renderCustomizedLabel}
+        fill="#8884d8"
+        dataKey="value"
+        isAnimationActive={isAnimationActive}
+        shape={MyCustomPie}
+      />
+    </PieChart>
     ); 
 }

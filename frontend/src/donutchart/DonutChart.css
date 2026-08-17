@@ -1,0 +1,6 @@
+.donutchart-background-container {
+    background-color: var(--dark-container-bg);
+    border-radius: 10px;
+    height: 171px;
+    width: 500px;
+}
