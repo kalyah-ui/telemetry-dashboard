@@ -9,21 +9,35 @@
 
 .donut-wrapper {
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  gap: 12px;
+  min-height: 180px;
+ 
+}
+
+.donut-shell {
+  width: clamp(80px, 20vw, 200px);
+  aspect-ratio: 1;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 180px;
+  justify-content: flex-end; /* donut stays at top, label sits below */
+  overflow: hidden;          /* prevents spill */
+  gap: 6px;                  /* spacing between donut + label */
 }
+
 
 .donut-center-text {
   fill: white;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 600;
 }
 
 .donut-label {
   fill: var(--text);
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 500;
-  x: -10px;
 }
 
