@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'rec
 export function ClusteredBarChart({ data }: { data: any[] }) {
     return(
         <BarChart
-            style={{ width: '90%', maxWidth: '700px', maxHeight: '70vh', aspectRatio: 1.618 }}
+            style={{ width: '90%', maxWidth: '700px', minHeight:'180px', maxHeight: '70vh', aspectRatio: 1.618 }}
             responsive
             data={data}
             margin={{

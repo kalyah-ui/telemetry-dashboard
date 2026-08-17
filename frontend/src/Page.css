@@ -20,7 +20,21 @@
 
 .charts-row {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 320px 1fr;
   gap: 24px;
   align-items: center;
+  width: 100%;
+}
+
+.barchart-background-container {
+  display: flex;
+  flex-direction: column;   /* header stays on top */
+  align-items: stretch;      /* header stays full width */
+}
+
+.barchart-background-container > div {
+  display: flex;
+  justify-content: center;   /* chart centered horizontally */
+  align-items: center;       /* chart centered vertically if needed */
+  width: 100%;
 }

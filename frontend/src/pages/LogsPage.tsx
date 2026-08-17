@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { IndexLineChart } from "./IndexLineChart.tsx";
-import "../Page.css"
-import "./LineChart.css"
+import { IndexLineChart } from "../linechart/IndexLineChart.tsx";
+import { ClusteredBarChart } from "../barchart/ClusteredBarChart.tsx";
+import "./Page.css"
 
 function parseLocalDate(dateStr: string) {
     const [y, m, d] = dateStr.split('-').map(Number);
@@ -29,6 +29,11 @@ function formatLineChartDate(dateStr: string) {
     return parseLocalDate(dateStr).toLocaleDateString('en-US', { weekday: 'long' });
 }
 
+function formatBarChartDate(dateStr: string) {
+    return parseLocalDate(dateStr).toLocaleDateString('en-US', { weekday: 'short' });
+}
+
+
 function aggregateLast7Days(logs: any[]) {
     const labels = lastNDaysLabels(7);
     const counts: Record<string, number> = {};
@@ -44,13 +49,43 @@ function aggregateLast7Days(logs: any[]) {
     return labels.map((day) => ({
         day,               // YYYY-MM-DD (raw)
         name: formatLineChartDate(day), // Sunday, Monday, etc.
-        logs: counts[day],
-        latency: counts[day]
+        uv: counts[day],
+        pv: counts[day]
+    }));
+}
+
+function aggregateErrorsLast7Days(logs: any[]) {
+    const labels = lastNDaysLabels(7);
+    const counts: Record<string, number> = {};
+    const latencyTotals: Record<string, number> = {};
+
+    for (const lbl of labels) {
+        counts[lbl] = 0;
+        latencyTotals[lbl] = 0;
+    }
+
+    for (const item of logs) {
+        if (item.level !== 'ERROR') continue;
+
+        const d = new Date(item.timestamp);
+        const day = d.toLocaleDateString('en-CA');
+
+        if (day in counts) {
+            counts[day]++;
+            latencyTotals[day] += Number(item.latency_ms || 0);
+        }
+    }
+
+    return labels.map(day => ({
+        name: formatBarChartDate(day),
+        pv: counts[day] || 0,
+        uv: counts[day] ? Math.round(latencyTotals[day] / counts[day]) : 0
     }));
 }
 
 export function LogsPage() {
     const [summaryChartData, setSummaryChartData] = useState<any[] | null>(null);
+    const [errorChartData, setErrorChartData] = useState<any[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     
     useEffect(() => {
@@ -59,8 +94,10 @@ export function LogsPage() {
                 if (Array.isArray(response.data)) {
                     const logs = response.data;
                     setSummaryChartData(aggregateLast7Days(logs));
+                    setErrorChartData(aggregateErrorsLast7Days(logs));
                 } else {
                     setSummaryChartData([]);
+                    setErrorChartData([]);
                 }
             })
             .catch(err => {
@@ -72,11 +109,21 @@ export function LogsPage() {
     return (
         <>
             <div className="background-container">
-                <h1 className="chart-header-container">Logs</h1>
+                <title>Logs</title>
+                <h1 className="small-heading-container">Errors</h1>
+                {errorChartData === null && !error && <div>Loading logs...</div>}
+                {errorChartData && (
+                    <div>
+                        <h2>Errors (last 7 days)</h2>
+                        <ClusteredBarChart data={errorChartData} />
+                    </div>
+                )}
+                <h1 className="heading-container">Logs</h1>
                 {error && <div style={{ color: 'var(--error)' }}>Error loading logs: {error}</div>}
                 {summaryChartData === null && !error && <div>Loading logs...</div>}
                 {summaryChartData && (
                     <div>
+                        <h2>Logs (last 7 days)</h2>
                         <IndexLineChart data={summaryChartData} />
                     </div>
                 )}

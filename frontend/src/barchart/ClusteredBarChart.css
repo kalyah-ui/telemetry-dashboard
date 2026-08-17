@@ -2,4 +2,7 @@
     background-color: var(--dark-container-bg);
     border-radius: 10px;
     width: 30%;
+    min-width: 0;
+    min-height: 200px;
+    min-width: 300px;
 }

@@ -53,7 +53,15 @@ export function DonutChart({
     }) {
         console.log({data})
   return (
-    <PieChart style={{ width: '25%', maxWidth: '500px', maxHeight: '80vh', aspectRatio: 1 }} responsive>
+    <PieChart 
+        style={{
+            width: '15%', 
+            maxWidth: '500px', 
+            maxHeight: '232px', 
+            minHeight:'180px', 
+            aspectRatio: 1 
+        }} 
+    responsive>
       <Pie
         data={data}
         labelLine={false}
