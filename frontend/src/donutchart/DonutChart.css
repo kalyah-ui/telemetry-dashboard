@@ -5,6 +5,8 @@
     min-width: 0;
     min-height: 200px;
     max-height: 232px;
+    text-transform: uppercase;
+    padding-bottom: 8px;
 }
 
 .donut-wrapper {

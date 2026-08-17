@@ -29,36 +29,39 @@ function formatBarChartDate(dateStr: string) {
 }
 
 
-function aggregateErrorsLast7Days(logs: any[]) {
-    const labels = lastNDaysLabels(7);
-    const counts: Record<string, number> = {};
-    const latencyTotals: Record<string, number> = {};
+function aggregateLogsLast7Days(logs: any[]) {
+  const labels = lastNDaysLabels(7);
 
-    for (const lbl of labels) {
-        counts[lbl] = 0;
-        latencyTotals[lbl] = 0;
+  const errorCounts: Record<string, number> = {};
+  const warningCounts: Record<string, number> = {};
+
+  for (const lbl of labels) {
+    errorCounts[lbl] = 0;
+    warningCounts[lbl] = 0;
+  }
+
+  for (const item of logs) {
+    const d = new Date(item.timestamp);
+    const day = d.toLocaleDateString('en-CA'); // YYYY-MM-DD
+
+    if (!(day in errorCounts)) continue;
+
+    if (item.level === "ERROR") {
+      errorCounts[day]++;
+    } else if (item.level === "WARNING") {
+      warningCounts[day]++;
     }
+  }
 
-    for (const item of logs) {
-        if (item.level !== 'ERROR') continue;
-
-        const d = new Date(item.timestamp);
-        const day = d.toLocaleDateString('en-CA');
-
-        if (day in counts) {
-            counts[day]++;
-            latencyTotals[day] += Number(item.latency_ms || 0);
-        }
-    }
-
-    return labels.map(day => ({
-        name: formatBarChartDate(day),
-        latency: counts[day] || 0,
-        errors: counts[day] ? Math.round(latencyTotals[day] / counts[day]) : 0
-    }));
+  return labels.map(day => ({
+    name: formatBarChartDate(day), // Mon, Tue, Wed...
+    errors: errorCounts[day],
+    warnings: warningCounts[day]
+  }));
 }
+
 export function BarchartDisplay() {
-    const [errorChartData, setErrorChartData] = useState<any[] | null>(null);
+    const [barChartData, setBarChartData] = useState<any[] | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -66,9 +69,9 @@ export function BarchartDisplay() {
             .then(response => {
                 if (Array.isArray(response.data)) {
                     const logs = response.data;
-                    setErrorChartData(aggregateErrorsLast7Days(logs));
+                    setBarChartData(aggregateLogsLast7Days(logs));
                 } else {
-                    setErrorChartData([]);
+                    setBarChartData([]);
                 }
             })
             .catch(err => {
@@ -81,10 +84,10 @@ export function BarchartDisplay() {
         <>
             <div className="barchart-background-container">
                 <h1 className="chart-header-container">Errors</h1>
-                {errorChartData === null && !error && <div>Loading logs...</div>}
-                {errorChartData && (
+                {barChartData === null && !error && <div>Loading logs...</div>}
+                {barChartData && (
                     <div>
-                        <ClusteredBarChart data={errorChartData} />
+                        <ClusteredBarChart data={barChartData} />
                     </div>
                 )}
             </div>
