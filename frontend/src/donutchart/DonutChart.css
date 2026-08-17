@@ -6,3 +6,24 @@
     min-height: 200px;
     max-height: 232px;
 }
+
+.donut-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 180px;
+}
+
+.donut-center-text {
+  fill: white;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.donut-label {
+  fill: var(--text);
+  font-size: 1.4rem;
+  font-weight: 500;
+  x: -10px;
+}
+

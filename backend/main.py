@@ -44,7 +44,7 @@ def read_root():
 
 @app.get("/logs")
 def read_logs():
-    logs = get_recent_window_logs(7)
+    return get_recent_window_logs(7)
 
 
 @app.get("/errors")

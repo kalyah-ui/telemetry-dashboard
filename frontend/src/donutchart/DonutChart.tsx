@@ -1,6 +1,12 @@
 import { Pie, PieChart, Sector, useActiveTooltipDataPoints, useIsTooltipActive, type PieLabelRenderProps, type PieSectorShapeProps } from 'recharts';
 import "./DonutChart.css"
 
+type DonutData = {
+  name: string;
+  value: number;
+};
+
+
 const RADIAN = Math.PI / 180;
 const COLORS = ['var(--darker-chart-1)', 'var(--darker-chart-2)', 'var(--darker-chart-3)'];
 
@@ -44,33 +50,72 @@ const MyCustomPie = (props: PieSectorShapeProps) => {
 };
 
 
-export function DonutChart({
-    data,
-    isAnimationActive = true,
-    }: {
-    data: any[];
-    isAnimationActive?: boolean;
-    }) {
-        console.log({data})
+export function DonutChart({ data, isAnimationActive = true }: {
+  data: any[];
+  isAnimationActive?: boolean;
+  }) {
+
+  const percent = data[0].value;
+
   return (
-    <PieChart 
+    <div className='donut-wrapper'>
+      <PieChart
         style={{
-            width: '15%', 
-            maxWidth: '500px', 
-            maxHeight: '232px', 
-            minHeight:'180px', 
-            aspectRatio: 1 
-        }} 
-    responsive>
-      <Pie
-        data={data}
-        labelLine={false}
-        label={renderCustomizedLabel}
-        fill="#8884d8"
-        dataKey="value"
-        isAnimationActive={isAnimationActive}
-        shape={MyCustomPie}
-      />
-    </PieChart>
-    ); 
+          width: '15%',
+          maxWidth: '500px',
+          maxHeight: '232px',
+          minWidth: '75px',
+          minHeight: '75px',
+          aspectRatio: 1
+        }}
+        responsive>
+        <defs>
+          <linearGradient id="activeGradient" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--chart-2)" />
+            <stop offset="50%" stopColor="var(--chart-3)" />
+            <stop offset="100%" stopColor="var(--chart-1)" />
+          </linearGradient>
+
+          <linearGradient id="inactiveGradient" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--darker-chart-2)" />
+            <stop offset="50%" stopColor="var(--darker-chart-3)" />
+            <stop offset="100%" stopColor="var(--darker-chart-1)" />
+          </linearGradient>
+        </defs>
+        <Pie
+          data={[{ value: 100 }]}
+          dataKey="value"
+          startAngle={90}
+          endAngle={-270}
+          innerRadius="60%"
+          outerRadius="80%"
+          fill="url(#inactiveGradient)"
+          stroke="none"
+          isAnimationActive={isAnimationActive}
+        />
+
+        <Pie
+          data={[{ value: percent }]}
+          dataKey="value"
+          startAngle={90}
+          endAngle={90 - (percent / 100) * 360}
+          innerRadius="60%"
+          outerRadius="80%"
+          fill="url(#activeGradient)"
+          stroke="none"
+          isAnimationActive={isAnimationActive}
+        />
+        <text
+          x="50%"
+          y="50%"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          className="donut-center-text"
+        >
+          {`${percent}%`}
+        </text>
+      </PieChart>
+      <div className="donut-center-label">{data[0].name}</div>
+    </div>
+  );
 }
